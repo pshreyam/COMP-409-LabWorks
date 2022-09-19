@@ -1,0 +1,13 @@
+import os
+
+def compute_weight(mass, gravity):
+    return mass * gravity
+
+def hello():
+    pass
+
+mass = 20
+gravity = 9.8
+
+weight = compute_weight(mass, gravity)
+print(weight)
