@@ -26,3 +26,26 @@ class TestDFA(unittest.TestCase):
         self.assertEqual(check_string_validity("10", dfa), True)
         self.assertEqual(check_string_validity("1100", dfa), True)
         self.assertEqual(check_string_validity("101010", dfa), True)
+
+    def test_dfa_2(self):
+        # DFA that accepts strings accepts only 101
+        q0 = State("q0")
+        q1 = State("q1")
+        q2 = State("q2")
+        q3 = State("q3", True)
+        q4 = State("q4")
+
+        transition_table = {
+            str(q0): {"0": q4, "1": q1},
+            str(q1): {"0": q2, "1": q4},
+            str(q2): {"0": q4, "1": q3},
+            str(q3): {"0": q4, "1": q4},
+            str(q4): {"0": q4, "1": q4},
+        }
+
+        dfa = DFA(q0, transition_table)
+
+        self.assertEqual(check_string_validity("101", dfa), True)
+        self.assertEqual(check_string_validity("1010", dfa), False)
+        self.assertEqual(check_string_validity("0101", dfa), False)
+        self.assertEqual(check_string_validity("10101", dfa), False)
