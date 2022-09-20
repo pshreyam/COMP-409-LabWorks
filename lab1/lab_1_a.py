@@ -8,6 +8,7 @@ class Lexer(object):
             "def",
             "if",
             "return",
+            "print",
             "True",
             "False",
         ]
@@ -78,8 +79,17 @@ class Lexer(object):
                                         Token(current_lexeme, "INTEGER", line_number))
                                     # print(">>", current_lexeme)
                                 else:
-                                    self.tokens.append(
-                                        Token(current_lexeme, "IDENTIFIER", line_number))
+                                    i = 1
+                                    next_char = self.contents[index + i]
+                                    while next_char == " ":
+                                        i += 1
+                                        next_char = self.contents[index + i]
+                                    if next_char == "(":
+                                        self.tokens.append(
+                                            Token(current_lexeme, "IDENTIFIER (FUNCTION)", line_number))
+                                    else:
+                                        self.tokens.append(
+                                            Token(current_lexeme, "IDENTIFIER (VARIABLE)", line_number))
                                     # print(">>", current_lexeme)
 
 
@@ -97,12 +107,19 @@ if __name__ == "__main__":
     lexer = Lexer("code.txt")
     lexer.tokenize()
 
+    # Print Tokens
+    tokens = lexer.tokens
+    for token in tokens:
+        print(token)
+
     # Symbol Table
     table = PrettyTable()
     table.field_names = ["S.N.", "Lexeme", "Token Type", "Line Number"]
 
-    for index, token in enumerate(lexer.tokens):
-        # if token.token_type == "IDENTIFIER":
-        table.add_row([index + 1, token.lexeme, token.token_type, token.line_number])
+    index = 1
+    for token in tokens:
+        if token.token_type.startswith("IDENTIFIER"):
+            table.add_row([index, token.lexeme, token.token_type, token.line_number])
+            index += 1
 
     print(table)
