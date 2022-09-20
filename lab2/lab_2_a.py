@@ -17,17 +17,14 @@ class DFA:
 
     def transition(self, char):
         new_state = self.transition_table[str(self.current_state)][char]
-        return DFA(new_state, transition_table)
+        return DFA(new_state, self.transition_table)
 
 
 def check_string_validity(string, dfa):
     for char in string:
         dfa = dfa.transition(char)
 
-    if dfa.current_state.accepting:
-        print("String accepted!")
-    else:
-        print("String not accepted!")
+    return dfa.current_state.accepting
 
 
 if __name__ == "__main__":
@@ -44,4 +41,8 @@ if __name__ == "__main__":
     dfa = DFA(s0, transition_table)
 
     string = input("Enter the string: ")
-    check_string_validity(string, dfa)
+
+    if check_string_validity(string, dfa):
+        print("String accepted!")
+    else:
+        print("String not accepted!")
