@@ -1,3 +1,6 @@
+from prettytable import PrettyTable
+
+
 class Lexer(object):
     def __init__(self, filename):
         self.contents = self.read_file(filename)
@@ -8,52 +11,19 @@ class Lexer(object):
             "True",
             "False",
         ]
-        self.operators = {
-            "=": "<assignop>",
-            "+": "<addop>",
-            "-": "<subop>",
-            "*": "<multop>",
-            "/": "<divop>",
-            "==": "<eqop>",
-            ">": "<gtop>",
-            "<": "<ltop>",
-            ">=": "<gteop>",
-            "<=": "<lteop>",
-        }
-        self.symbols = [
-            "!",
-            "\"",
-            "#",
-            "$",
-            "%",
-            "&",
-            "'",
-            "(",
-            ")",
-            "*",
-            "+",
-            ",",
-            "-",
-            ".",
-            "/",
-            ":",
-            ";",
-            "<",
+        self.operators = [
             "=",
+            "+",
+            "-",
+            "*",
+            "/",
+            "==",
             ">",
-            "?",
-            "@",
-            "[",
-            "\\",
-            "]",
-            "^",
-            "_",
-            "`",
-            "{",
-            "|",
-            "}",
-            "~"]
-        self.symbol_table = []
+            "<",
+            ">=",
+            "<=",
+        ]
+        self.tokens = []
 
     def read_file(self, filename):
         with open(filename, "r") as f:
@@ -78,8 +48,8 @@ class Lexer(object):
                     line_number += 1
                 current_lexeme = ""
             elif character in ":(),":
-                print(f">> {character}")
-                self.symbol_table.append(
+                # print(f">> {character}")
+                self.tokens.append(
                     Token(
                         character,
                         "SPECIAL_SYMBOL",
@@ -89,28 +59,28 @@ class Lexer(object):
                 current_lexeme += character
                 if current_lexeme + \
                         self.contents[index + 1] not in self.operators:
-                    print(f">> {current_lexeme}")
-                    self.symbol_table.append(
+                    # print(f">> {current_lexeme}")
+                    self.tokens.append(
                         Token(current_lexeme, "OPERATOR", line_number))
                     current_lexeme = ""
             else:
                 current_lexeme += character
                 if current_lexeme in self.keywords:
-                    self.symbol_table.append(
+                    self.tokens.append(
                         Token(current_lexeme, "KEYWORD", line_number))
-                    print(">>", current_lexeme)
+                    # print(">>", current_lexeme)
                 else:
                     if index <= len(self.contents) - 2:
                         if self.contents[index + 1] in list("(), :\n="):
                             if not current_lexeme in " \n":
                                 if self.is_integer(current_lexeme):
-                                    self.symbol_table.append(
+                                    self.tokens.append(
                                         Token(current_lexeme, "INTEGER", line_number))
-                                    print(">>", current_lexeme)
+                                    # print(">>", current_lexeme)
                                 else:
-                                    self.symbol_table.append(
+                                    self.tokens.append(
                                         Token(current_lexeme, "IDENTIFIER", line_number))
-                                    print(">>", current_lexeme)
+                                    # print(">>", current_lexeme)
 
 
 class Token(object):
@@ -126,5 +96,13 @@ class Token(object):
 if __name__ == "__main__":
     lexer = Lexer("code.txt")
     lexer.tokenize()
-    for index, token in enumerate(lexer.symbol_table):
-        print(index + 1, token)
+
+    # Symbol Table
+    table = PrettyTable()
+    table.field_names = ["S.N.", "Lexeme", "Token Type", "Line Number"]
+
+    for index, token in enumerate(lexer.tokens):
+        # if token.token_type == "IDENTIFIER":
+        table.add_row([index + 1, token.lexeme, token.token_type, token.line_number])
+
+    print(table)

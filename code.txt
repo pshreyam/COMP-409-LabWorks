@@ -1,9 +1,9 @@
-a = 10
-b = 20
+x = 10
+y = 20
 
 def is_greater(a, b):
     if a > b:
         return True
     return False
 
-is_greater(10, 20)
+is_greater(x, y)
