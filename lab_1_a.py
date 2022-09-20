@@ -101,11 +101,16 @@ class Lexer(object):
                     print(">>", current_lexeme)
                 else:
                     if index <= len(self.contents) - 2:
-                        if self.contents[index + 1] in list("(), :\n"):
+                        if self.contents[index + 1] in list("(), :\n="):
                             if not current_lexeme in " \n":
-                                self.symbol_table.append(
-                                    Token(current_lexeme, "IDENTIFIER", line_number))
-                                print(">>", current_lexeme)
+                                if self.is_integer(current_lexeme):
+                                    self.symbol_table.append(
+                                        Token(current_lexeme, "INTEGER", line_number))
+                                    print(">>", current_lexeme)
+                                else:
+                                    self.symbol_table.append(
+                                        Token(current_lexeme, "IDENTIFIER", line_number))
+                                    print(">>", current_lexeme)
 
 
 class Token(object):
