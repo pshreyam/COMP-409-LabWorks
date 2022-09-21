@@ -6,9 +6,12 @@ from lab_2_a import State, DFA, check_string_validity
 class TestDFA(unittest.TestCase):
     def test_dfa_1(self):
         # DFA that accepts strings that start with 1 and ends with 0
+
+        # 4 states with q2 as the accepting state
+        # q3 is the trap state
         q0 = State("q0")
         q1 = State("q1")
-        q2 = State("q2", True)
+        q2 = State("q2", accepting=True)
         q3 = State("q3")
 
         transition_table = {
@@ -29,10 +32,13 @@ class TestDFA(unittest.TestCase):
 
     def test_dfa_2(self):
         # DFA that accepts strings accepts only 101
+
+        # 5 states with q3 as the accepting state
+        # q4 is the trap state
         q0 = State("q0")
         q1 = State("q1")
         q2 = State("q2")
-        q3 = State("q3", True)
+        q3 = State("q3", accepting=True)
         q4 = State("q4")
 
         transition_table = {

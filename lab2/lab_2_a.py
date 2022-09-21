@@ -28,10 +28,14 @@ def check_string_validity(string, dfa):
 
 
 if __name__ == "__main__":
-    s0 = State("s0", True)
-    s1 = State("s1", True)
+    # Three states with s0 and s1 as accepting states
+    # s2 is trap state
+    s0 = State("s0", accepting=True)
+    s1 = State("s1", accepting=True)
     s2 = State("s2")
 
+    # Defining a state transition table for accepting a string
+    # with no consecutive 1's together
     transition_table = {
         str(s0): {"0": s0, "1": s1},
         str(s1): {"0": s0, "1": s2},
