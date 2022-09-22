@@ -1,0 +1,14 @@
+rate = 60.0
+
+def get_total_cost(quantity, rate):
+    return quantity * rate
+
+get_total_cost(10, 60.0)
+
+a = -10.00
+u = 20
+t = 10
+
+v = u + a * t
+
+print(v)
