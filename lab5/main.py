@@ -22,11 +22,46 @@ def left_factor(rules):
         A = A.strip()
         right_side = list(map(lambda x: x.strip(), right_side.split("|")))
 
+        longest_prefices = []
+
         if len(right_side) >= 2:
             for term in right_side:
-                pass
+                for another_term in right_side:
+                    if not term == another_term:
+                        longest_prefix = find_longest_prefix(term, another_term)
+                        if longest_prefix == "":
+                            continue
+                        longest_prefices.append(longest_prefix)
 
-        print(f"{A}, {right_side}")
+        prefix = ""
+        for longest_prefix in longest_prefices:
+            if len(longest_prefix) > len(prefix):
+                prefix = longest_prefix
+
+        # If α ≠ ε, replace all of the A-productions A → α β1 | α β2 |….| α βn |γ,
+        # where γ represents all alternatives that do not begin with α, by
+
+        # A → α A' | γ
+        # A' → β1 | β2 |….| βn
+
+        terms_with_prefix = []
+        terms_without_prefix = []
+        if len(prefix) > 0:
+            for term in right_side:
+                if term.startswith(prefix):
+                    terms_with_prefix.append(term.replace(prefix, ""))
+                else:
+                    terms_without_prefix.append(term)
+            B = A
+            if any([x.startswith(A) for x in rules]):
+                B = A + "'"
+            rule1 = f"{A} -> {prefix}{B}'"
+            if len(terms_without_prefix) > 0:
+                rule1 += " |" + " | ".join(terms_without_prefix)
+            rule2 = f"{B}' -> {' | '.join([term for term in terms_with_prefix])}"
+            rules.append(rule1)
+            rules.append(rule2)
+            rules.remove(rule)
     return rules
 
 
