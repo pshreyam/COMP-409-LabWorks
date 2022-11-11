@@ -53,12 +53,13 @@ def left_factor(rules):
                 else:
                     terms_without_prefix.append(term)
             B = A
-            if any([x.startswith(A) for x in rules]):
-                B = A + "'"
-            rule1 = f"{A} -> {prefix}{B}'"
+            while any([x.startswith(B) for x in rules]):
+                print("Rules: ", rules)
+                B += "'"
+            rule1 = f"{A} -> {prefix}{B}"
             if len(terms_without_prefix) > 0:
                 rule1 += " |" + " | ".join(terms_without_prefix)
-            rule2 = f"{B}' -> {' | '.join([term for term in terms_with_prefix])}"
+            rule2 = f"{B} -> {' | '.join([term for term in terms_with_prefix])}"
             rules.append(rule1)
             rules.append(rule2)
             rules.remove(rule)
