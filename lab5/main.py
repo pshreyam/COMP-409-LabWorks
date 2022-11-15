@@ -49,7 +49,10 @@ def left_factor(rules):
         if len(prefix) > 0:
             for term in right_side:
                 if term.startswith(prefix):
-                    terms_with_prefix.append(term.replace(prefix, ""))
+                    new_term = term.replace(prefix, "")
+                    if new_term == "":
+                        new_term = "ε"
+                    terms_with_prefix.append(new_term)
                 else:
                     terms_without_prefix.append(term)
             B = A
@@ -58,7 +61,7 @@ def left_factor(rules):
                 B += "'"
             rule1 = f"{A} -> {prefix}{B}"
             if len(terms_without_prefix) > 0:
-                rule1 += " |" + " | ".join(terms_without_prefix)
+                rule1 += " | " + " | ".join(terms_without_prefix)
             rule2 = f"{B} -> {' | '.join([term for term in terms_with_prefix])}"
             rules.append(rule1)
             rules.append(rule2)
