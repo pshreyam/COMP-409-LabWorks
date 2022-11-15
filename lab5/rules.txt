@@ -1,1 +1,1 @@
-S -> aBa | aaBa | cA | cAB
+S -> aaBaa | aaBaaa | aaBa
