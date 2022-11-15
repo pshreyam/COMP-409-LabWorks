@@ -28,16 +28,20 @@ def left_factor(rules):
             for term in right_side:
                 for another_term in right_side:
                     if not term == another_term:
-                        longest_prefix = find_longest_prefix(term, another_term)
+                        longest_prefix = find_longest_prefix(
+                            term, another_term)
                         if not longest_prefix == "":
                             if len(longest_prefices) > 0:
                                 for i in range(len(longest_prefices)):
-                                    if longest_prefices[i].startswith(longest_prefix) or longest_prefix.startswith(longest_prefices[i]):
-                                        if len(longest_prefix) < len(longest_prefices[i]):
+                                    if longest_prefices[i].startswith(longest_prefix) or \
+                                            longest_prefix.startswith(longest_prefices[i]):
+                                        if len(longest_prefix) < len(
+                                                longest_prefices[i]):
                                             longest_prefices[i] = longest_prefix
                                     else:
                                         if longest_prefix not in longest_prefices:
-                                            longest_prefices.append(longest_prefix)
+                                            longest_prefices.append(
+                                                longest_prefix)
                             else:
                                 longest_prefices.append(longest_prefix)
 
@@ -60,10 +64,12 @@ def left_factor(rules):
                             new_term = "ε"
                         terms_with_prefix.append(new_term)
                 B = A
-                while any([x.startswith(B) for x in rules]) or any([x.startswith(B) for x in new_rules]):
+                while any([x.startswith(B) for x in rules]) or \
+                        any([x.startswith(B) for x in new_rules]):
                     B += "'"
                 right_side_rules.append(f"{prefix}{B}")
-                new_rules.append(f"{B} -> {' | '.join([term for term in terms_with_prefix])}")
+                new_rules.append(
+                    f"{B} -> {' | '.join([term for term in terms_with_prefix])}")
 
             # Terms without common prefix
             gamma = []
