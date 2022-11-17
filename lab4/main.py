@@ -4,7 +4,7 @@ def read_rules(filename):
         return rules
 
 
-def get_table(rules):
+def parse_rules(rules):
     table = {}
     for rule in rules:
         A, right_side = rule.split("->")
@@ -14,28 +14,72 @@ def get_table(rules):
     return table
 
 
-def generate_first_and_follow_table(rules):
-    first_table = {}
-    follow_table = {}
+def get_table(rules):
+    table = {}
     for rule in rules:
-        A, right_side = rule.split("->")
-        A = A.strip()
-        right_side = list(map(lambda x: x.strip(), right_side.split("|")))
-        first_table[A] = set()
-        follow_table[A] = set()
-    return first_table, follow_table
+        A = rule.split("->")[0].strip()
+        table[A] = set()
+    return table
+
+
+def is_nullable(expr, rules):
+    if expr.islower() or expr.isdigit():
+        return False
+    if expr in rules:
+        right_side = rules[expr]
+        for term in right_side:
+            if term == "ε":
+                return True
+    else:
+        terms_list = parse_term(expr)
+        return all([is_nullable(x, rules) for x in terms_list])
+    return False
+
+
+def parse_term(term):
+    term_list = []
+    for character in term:
+        if character.islower() or character.isdigit():
+            term_list.append(character)
+        elif character.isupper():
+            term_list.append(character)
+        elif character == "'":
+            term_list[-1] = term_list[-1] + character
+    return term_list
 
 
 def first(expr, rules):
-    first_set = set()
+    global first_table
+
+    if expr.islower():
+        return set([expr])
+    if not first_table[expr] == set():
+        return first_table[expr]
+
     right_side = rules[expr]
+
     for term in right_side:
-        first_character = term[0]
-        if first_character.islower() or first_character.isdigit():
-            first_set.add(first_character)
-        elif first_character.isupper():
-            first_set = first_set.union(first(first_character, rules))
-    return first_set
+        term_list = parse_term(term)
+
+        terms = iter(term_list)
+        x = next(terms)
+        while is_nullable(x, rules):
+            first_table[expr] = first_table[expr].union(first(x, rules) - {"ε"})
+            try:
+                x = next(terms)
+            except StopIteration:
+                first_table[expr].add("ε")
+                break
+        first_table[expr] = first_table[expr].union(first(x, rules) - {"ε"})
+        if x == "ε":
+            first_table[expr].add("ε")
+
+    # if is_nullable(expr, rules):
+    #     first_table[expr].add("ε")
+    # elif any([is_nullable(term, rules) for term in right_side]):
+    #     first_table[expr].add("ε")
+
+    return first_table[expr]
 
 
 if __name__ == "__main__":
@@ -46,9 +90,10 @@ if __name__ == "__main__":
     for i in range(50):
         print("-", end="")
     print()
-    first_table, follow_table = generate_first_and_follow_table(production_rules)
-    rules_table = get_table(production_rules)
-    print(first("S", rules_table))
-    print(first("A", rules_table))
-    print(first("B", rules_table))
-    print(first("C", rules_table))
+    rules = parse_rules(production_rules)
+    first_table = get_table(production_rules)
+    follow_table = get_table(production_rules)
+    for rule in rules:
+        first(rule, rules)
+    for rule in first_table:
+        print(f"FIRST({rule}) = ", first_table[rule])
