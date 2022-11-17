@@ -51,7 +51,7 @@ def parse_term(term):
 def first(expr, rules):
     global first_table
 
-    if expr.islower():
+    if expr.islower() or expr.isdigit():
         return set([expr])
     if not first_table[expr] == set():
         return first_table[expr]
@@ -82,6 +82,39 @@ def first(expr, rules):
     return first_table[expr]
 
 
+def follow(expr, rules):
+    global follow_table
+
+    if expr == "S":
+        return {'$'}
+    if not follow_table[expr] == set():
+        return follow_table[expr]
+
+    for rule in rules:
+        right_side = rules[rule]
+        for term in right_side:
+            term_list = parse_term(term)
+            if expr in term_list:
+                # print(expr, "::", term_list)
+                if term_list[-1] == expr:
+                    follow_table[expr] = follow_table[expr].union(follow(rule, rules))
+                else:
+                    terms = iter(term_list)
+                    x = None
+                    while not x == expr:
+                        x = next(terms)
+                    follow_item = next(terms)
+                    while is_nullable(follow_item, rules):
+                        follow_table[expr] = follow_table[expr].union(first(follow_item, rules) - {"ε"})
+                        try:
+                            follow_item = next(terms)
+                        except StopIteration:
+                            follow_table[expr] = follow_table[expr].union(follow(rule, rules))
+                    follow_table[expr] = follow_table[expr].union(first(follow_item, rules))
+
+    return follow_table[expr]
+
+
 if __name__ == "__main__":
     production_rules = read_rules("rules.txt")
     print("Production Rules:")
@@ -95,5 +128,14 @@ if __name__ == "__main__":
     follow_table = get_table(production_rules)
     for rule in rules:
         first(rule, rules)
+        follow(rule, rules)
+    for i in range(50):
+        print("-", end="")
+    print()
     for rule in first_table:
         print(f"FIRST({rule}) = ", first_table[rule])
+    for i in range(50):
+        print("-", end="")
+    print()
+    for rule in follow_table:
+        print(f"FOLLOW({rule}) = ", follow_table[rule])

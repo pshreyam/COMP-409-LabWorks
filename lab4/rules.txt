@@ -1,3 +1,6 @@
-A -> BCa | m
-B -> h | ε
-C -> d | ε
+S -> A
+A -> aA''
+A' -> dA' | eA' | ε
+A'' -> BA' | CA'
+B -> bBc | f
+C -> g
