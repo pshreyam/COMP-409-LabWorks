@@ -85,9 +85,11 @@ def first(expr, rules):
 def follow(expr, rules):
     global follow_table
 
-    if expr == "S":
-        return {'$'}
     if not follow_table[expr] == set():
+        return follow_table[expr]
+
+    if expr == "S":
+        follow_table[expr] = {"$"}
         return follow_table[expr]
 
     for rule in rules:
@@ -95,9 +97,11 @@ def follow(expr, rules):
         for term in right_side:
             term_list = parse_term(term)
             if expr in term_list:
-                # print(expr, "::", term_list)
                 if term_list[-1] == expr:
+                    if term in visited_list[expr]:
+                        continue
                     follow_table[expr] = follow_table[expr].union(follow(rule, rules))
+                    visited_list[expr].add(term)
                 else:
                     terms = iter(term_list)
                     x = None
@@ -111,6 +115,7 @@ def follow(expr, rules):
                         except StopIteration:
                             follow_table[expr] = follow_table[expr].union(follow(rule, rules))
                     follow_table[expr] = follow_table[expr].union(first(follow_item, rules))
+
 
     return follow_table[expr]
 
@@ -126,6 +131,7 @@ if __name__ == "__main__":
     rules = parse_rules(production_rules)
     first_table = get_table(production_rules)
     follow_table = get_table(production_rules)
+    visited_list = get_table(production_rules)
     for rule in rules:
         first(rule, rules)
         follow(rule, rules)
