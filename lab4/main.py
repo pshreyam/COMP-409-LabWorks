@@ -123,25 +123,27 @@ def follow(expr, rules):
 if __name__ == "__main__":
     production_rules = read_rules("rules.txt")
     print("Production Rules:")
+    # Print Production Rules
     for rule in production_rules:
         print(rule)
-    for i in range(50):
-        print("-", end="")
-    print()
+    # Generate Tables
     rules = parse_rules(production_rules)
     first_table = get_table(production_rules)
     follow_table = get_table(production_rules)
     visited_list = get_table(production_rules)
+    # Compute first and follow set
     for rule in rules:
         first(rule, rules)
         follow(rule, rules)
     for i in range(50):
         print("-", end="")
     print()
+    # Print first set
     for rule in first_table:
         print(f"FIRST({rule}) = ", first_table[rule])
     for i in range(50):
         print("-", end="")
     print()
+    # Print follow set
     for rule in follow_table:
         print(f"FOLLOW({rule}) = ", follow_table[rule])
